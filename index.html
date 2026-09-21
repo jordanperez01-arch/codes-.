@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universo de Flores Amarillas 🌻✨</title>
+    <title>Galaxia de Flores Amarillas 🌻✨</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -11,203 +11,202 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: radial-gradient(circle at center, #1b1300, #0a0700, #000000);
+            background: #000;
             color: #fff;
-            overflow-x: hidden;
+            overflow: hidden;
+            margin: 0;
+            user-select: none;
         }
 
         .font-dancing {
             font-family: 'Dancing Script', cursive;
         }
 
-        /* Glassmorphism card style */
+        /* Efecto de resplandor para los textos de la galaxia */
+        .galaxy-text {
+            text-shadow: 0 0 8px rgba(255, 223, 0, 0.9), 0 0 15px rgba(255, 180, 0, 0.6);
+        }
+
+        /* Estilo Glassmorphism para la carta/modal */
         .glass-card {
-            background: rgba(255, 230, 100, 0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 223, 0, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(255, 180, 0, 0.15);
+            background: rgba(20, 15, 5, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 40px rgba(255, 200, 0, 0.25);
         }
 
-        .glass-card:hover {
-            border-color: rgba(255, 223, 0, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(255, 200, 0, 0.35);
+        /* Animación suave flotante para las flores */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.05); }
         }
 
-        /* Ambient glowing text */
-        .glow-text {
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7), 0 0 30px rgba(255, 180, 0, 0.4);
+        .flower-item {
+            animation: floatSlow 4s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        /* Floating Animation */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(3deg); }
-        }
-
-        .floating {
-            animation: float 5s ease-in-out infinite;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0700;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #fbbf24;
-            border-radius: 4px;
+        .flower-item:hover {
+            filter: drop-shadow(0 0 15px rgba(255, 230, 0, 1));
+            transform: scale(1.2) !important;
         }
     </style>
 </head>
-<body class="min-h-screen relative flex flex-col justify-between selection:bg-amber-400 selection:text-black">
+<body class="w-screen h-screen relative flex items-center justify-center">
 
-    <!-- Canvas de Fondo para el Universo de Estrellas y Flores -->
-    <canvas id="universeCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+    <!-- Canvas para el fondo de la Galaxia en Espiral -->
+    <canvas id="galaxyCanvas" class="absolute inset-0 z-0"></canvas>
 
-    <!-- Header / Título -->
-    <header class="relative z-10 text-center pt-12 pb-6 px-4">
-        <span class="text-amber-400 text-sm md:text-base tracking-widest uppercase font-semibold glow-text">
-            ✨ Un detalle especial para ti ✨
-        </span>
-        <h1 class="text-4xl md:text-7xl font-bold font-dancing text-amber-300 mt-2 glow-text">
-            Universo de Flores Amarillas
+    <!-- Capa interactiva de Flores y Mensajes flotantes -->
+    <div id="flowerUniverse" class="absolute inset-0 z-10 pointer-events-none"></div>
+
+    <!-- Título Principal en Pantalla -->
+    <div class="absolute top-6 text-center z-10 pointer-events-none px-4">
+        <h1 class="text-3xl md:text-5xl font-dancing font-bold text-amber-300 galaxy-text">
+            Eres Mi Sol 🌻✨
         </h1>
-        <p class="text-amber-100/70 text-sm md:text-lg max-w-xl mx-auto mt-3 font-light">
-            Haz clic en el girasol o en las tarjetas para descubrir pequeños destellos de cariño.
+        <p class="text-amber-200/70 text-xs md:text-sm mt-1">
+            Haz clic en las flores de la galaxia para descubrir tus mensajes
         </p>
-    </header>
+    </div>
 
-    <!-- Sección Principal Interactiva -->
-    <main class="relative z-10 container mx-auto px-4 py-6 flex flex-col items-center gap-12">
-        
-        <!-- Girasol Interactivo Central -->
-        <div class="relative group cursor-pointer my-4" onclick="openFlowerModal()">
-            <div class="absolute -inset-4 bg-gradient-to-r from-amber-500 to-yellow-300 rounded-full blur-2xl opacity-40 group-hover:opacity-80 transition duration-1000 group-hover:duration-200"></div>
-            <div class="relative w-48 h-48 md:w-60 md:h-60 rounded-full flex items-center justify-center border-2 border-amber-400/40 bg-black/40 backdrop-blur-md transform transition duration-500 group-hover:scale-105 floating">
-                <span class="text-8xl md:text-9xl select-none filter drop-shadow-[0_0_20px_rgba(255,200,0,0.8)]">🌻</span>
-            </div>
-            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-amber-400 text-black font-semibold text-xs md:text-sm py-1.5 px-4 rounded-full shadow-lg opacity-90 group-hover:opacity-100 transition">
-                ✨ Tócame para abrir ✨
-            </div>
-        </div>
-
-        <!-- Botones de Acción -->
-        <div class="flex flex-wrap justify-center gap-4">
-            <button onclick="rainPetals()" class="px-6 py-3 rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-semibold text-sm shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 hover:scale-105 transition active:scale-95 flex items-center gap-2">
-                <span>🌼</span> Lluvia de Flores
-            </button>
-            <button id="musicBtn" onclick="toggleMusic()" class="px-6 py-3 rounded-full border border-amber-400/40 bg-amber-400/10 text-amber-300 font-semibold text-sm hover:bg-amber-400/20 hover:scale-105 transition active:scale-95 flex items-center gap-2">
-                <span id="musicIcon">🎵</span> <span id="musicText">Música Melódica</span>
-            </button>
-        </div>
-
-        <!-- Rejilla de Frases Bonitas -->
-        <section class="w-full max-w-5xl mt-6">
-            <h2 class="text-2xl md:text-3xl font-dancing text-amber-300 text-center mb-8 glow-text">
-                Mensajes que Iluminan como el Sol 💛
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                <!-- Tarjeta 1 -->
-                <div class="glass-card p-6 rounded-2xl transition duration-300 hover:-translate-y-2 flex flex-col justify-between">
-                    <p class="text-amber-100/90 italic font-light text-base leading-relaxed">
-                        "Que hoy nunca te falte la luz, la alegría y un motivo para sonreír. Eres como un girasol que siempre busca lo bonito de la vida."
-                    </p>
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-amber-400/10 text-xs text-amber-400/80">
-                        <span>🌻 Girasol de Luz</span>
-                        <span>✨💛</span>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 2 -->
-                <div class="glass-card p-6 rounded-2xl transition duration-300 hover:-translate-y-2 flex flex-col justify-between">
-                    <p class="text-amber-100/90 italic font-light text-base leading-relaxed">
-                        "Te entrego estas flores amarillas no solo por la tradición, sino para recordarte lo especial e iluminada que es tu presencia."
-                    </p>
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-amber-400/10 text-xs text-amber-400/80">
-                        <span>🌼 Margarita Amarilla</span>
-                        <span>✨💛</span>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 3 -->
-                <div class="glass-card p-6 rounded-2xl transition duration-300 hover:-translate-y-2 flex flex-col justify-between">
-                    <p class="text-amber-100/90 italic font-light text-base leading-relaxed">
-                        "Las flores amarillas simbolizan energía, amistad pura y comienzos bonitos. Que tu día esté repleto de todo eso y más."
-                    </p>
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-amber-400/10 text-xs text-amber-400/80">
-                        <span>🌷 Tulipán Dorado</span>
-                        <span>✨💛</span>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 4 -->
-                <div class="glass-card p-6 rounded-2xl transition duration-300 hover:-translate-y-2 flex flex-col justify-between">
-                    <p class="text-amber-100/90 italic font-light text-base leading-relaxed">
-                        "Hay personas que son como días soleados en mitad de la tormenta. Gracias por ser esa luz para quienes te rodean."
-                    </p>
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-amber-400/10 text-xs text-amber-400/80">
-                        <span>⭐ Destello Solar</span>
-                        <span>✨💛</span>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 5 -->
-                <div class="glass-card p-6 rounded-2xl transition duration-300 hover:-translate-y-2 flex flex-col justify-between">
-                    <p class="text-amber-100/90 italic font-light text-base leading-relaxed">
-                        "Un pequeño detalle amarillo para recordarte que mereces todo el amor, la calma y los momentos bonitos del mundo."
-                    </p>
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-amber-400/10 text-xs text-amber-400/80">
-                        <span>🌹 Rosa Amarilla</span>
-                        <span>✨💛</span>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 6 -->
-                <div class="glass-card p-6 rounded-2xl transition duration-300 hover:-translate-y-2 flex flex-col justify-between">
-                    <p class="text-amber-100/90 italic font-light text-base leading-relaxed">
-                        "Incluso en la noche más oscura, el universo recuerda dónde florecen las almas más luminosas."
-                    </p>
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-amber-400/10 text-xs text-amber-400/80">
-                        <span>🌾 Flor de Campo</span>
-                        <span>✨💛</span>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="relative z-10 text-center py-8 text-amber-200/50 text-xs">
-        <p>Hecho con 💛 y luz para esta fecha tan especial</p>
-    </footer>
-
-    <!-- Modal Carta Especial -->
-    <div id="flowerModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="glass-card max-w-lg w-full p-8 rounded-3xl relative border border-amber-400/40 text-center transform scale-95 transition-transform duration-300" id="modalContent">
-            <button onclick="closeFlowerModal()" class="absolute top-4 right-4 text-amber-300/70 hover:text-amber-300 text-xl font-bold w-8 h-8 rounded-full bg-amber-400/10 flex items-center justify-center">
+    <!-- Modal con la carta/frase bonita al presionar una flor -->
+    <div id="messageModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+        <div id="modalContent" class="glass-card max-w-md w-full p-6 md:p-8 rounded-3xl text-center transform scale-90 transition-transform duration-300 relative border border-amber-400/40">
+            <button onclick="closeModal()" class="absolute top-3 right-4 text-amber-300/80 hover:text-amber-200 text-xl font-bold">
                 ✕
             </button>
-            <div class="text-6xl mb-4">🌻✨</div>
-            <h3 class="text-3xl font-dancing text-amber-300 mb-4 glow-text">Una Carta Para Ti</h3>
-            <p class="text-amber-100/90 text-sm md:text-base leading-relaxed font-light mb-6">
-                Hoy florece la primavera en el corazón. Que este universo de amarillos ilumine tu día, llenando cada paso que des de calidez, buena suerte y sonrisas infinitas. ¡Nunca dejes de brillar!
+            <div id="modalIcon" class="text-6xl mb-3">💐</div>
+            <h2 id="modalTitle" class="text-2xl md:text-3xl font-dancing font-bold text-amber-300 mb-3 galaxy-text">
+                Para Ti 💛
+            </h2>
+            <p id="modalMessage" class="text-amber-100/90 text-sm md:text-base leading-relaxed font-light mb-6">
+                <!-- Mensaje dinámico -->
             </p>
-            <button onclick="closeFlowerModal()" class="px-6 py-2.5 rounded-full bg-amber-400 text-black font-semibold text-sm hover:bg-amber-300 transition shadow-lg">
-                Guardar en el corazón 💛
+            <button onclick="closeModal()" class="px-6 py-2 rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-semibold text-xs md:text-sm hover:scale-105 active:scale-95 transition shadow-lg shadow-amber-500/30">
+                Guardar con cariño ✨
             </button>
         </div>
     </div>
 
-    <!-- Script Principal -->
     <script>
-        // --- 1. Canvas del Universo de Estrellas y Flores ---
-        const canvas = document.getElementById('universeCanvas');
+        // --- 1. CONFIGURACIÓN Y MENSAJES DE LAS FLORES ---
+        const flowersData = [
+            {
+                label: "Eres mi sol 💛",
+                icon: "🌻",
+                title: "Mi Sol Radiante",
+                message: "Así como los girasoles siempre buscan la luz del sol, mi corazón siempre busca la tuya. Gracias por iluminar cada uno de mis días.",
+                x: 50, y: 50, scale: 1.4 // Centro de la galaxia
+            },
+            {
+                label: "Te amo ✨",
+                icon: "💐",
+                title: "Te Amo Demasiado",
+                message: "No hay galaxia ni universo suficiente para medir todo el amor que siento por ti. Eres mi lugar favorito en el mundo.",
+                x: 50, y: 22, scale: 1.1
+            },
+            {
+                label: "Eres única 💖",
+                icon: "🌹",
+                title: "Única e Irremplazable",
+                message: "Entre millones de estrellas en el cielo, tú eres la que más brilla. Tu sonrisa hace que todo valga la pena.",
+                x: 25, y: 72, scale: 1.0
+            },
+            {
+                label: "Siempre juntos 💍",
+                icon: "🌻",
+                title: "Nuestro Camino",
+                message: "Quiero caminar a tu lado en todas las estaciones de la vida, floreciendo juntos sin importar nada.",
+                x: 72, y: 75, scale: 1.1
+            },
+            {
+                label: "Te adoro 🥺",
+                icon: "🌾",
+                title: "Mi Persona Favorita",
+                message: "Adoro tu forma de ser, tu risa, tus abrazos y la forma bonita en la que haces que todo sea especial.",
+                x: 22, y: 32, scale: 0.95
+            },
+            {
+                label: "My Love 💛",
+                icon: "💐",
+                title: "Amor Infinito",
+                message: "Estas flores amarillas son solo un pequeño reflejo de la alegría enorme que me da tenerte en mi vida.",
+                x: 15, y: 52, scale: 1.0
+            },
+            {
+                label: "Eres mi todo ✨",
+                icon: "🌻",
+                title: "Mi Todo",
+                message: "Contigo descubrí lo bonito que es querer sin medidas. Eres mi sueño hecho realidad.",
+                x: 82, y: 42, scale: 0.9
+            },
+            {
+                label: "Mi tesoro 💖",
+                icon: "🌷",
+                title: "Vales Oro",
+                message: "Gracias por existir y por llenar mi universo de colores amarillos, cálidos y llenos de luz.",
+                x: 76, y: 24, scale: 0.95
+            }
+        ];
+
+        // --- 2. RENDERIZAR FLORES INTERACTIVAS ---
+        const container = document.getElementById('flowerUniverse');
+
+        flowersData.forEach((data, index) => {
+            const div = document.createElement('div');
+            div.className = 'absolute pointer-events-auto flower-item flex flex-col items-center justify-center text-center';
+            div.style.left = `${data.x}%`;
+            div.style.top = `${data.y}%`;
+            div.style.transform = `translate(-50%, -50%) scale(${data.scale})`;
+
+            div.innerHTML = `
+                <div class="text-4xl md:text-5xl filter drop-shadow-[0_0_12px_rgba(255,215,0,0.8)]">
+                    ${data.icon}
+                </div>
+                <span class="text-[10px] md:text-xs font-semibold text-amber-300 galaxy-text mt-1 bg-black/40 px-2 py-0.5 rounded-full border border-amber-400/30 whitespace-nowrap">
+                    ${data.label}
+                </span>
+            `;
+
+            div.onclick = () => openModal(data);
+            container.appendChild(div);
+        });
+
+        // --- 3. LÓGICA DEL MODAL DE MENSAJES ---
+        const modal = document.getElementById('messageModal');
+        const modalContent = document.getElementById('modalContent');
+
+        function openModal(data) {
+            document.getElementById('modalIcon').textContent = data.icon;
+            document.getElementById('modalTitle').textContent = data.title;
+            document.getElementById('modalMessage').textContent = data.message;
+
+            // Efecto Confetti amarillo al hacer clic
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.6 },
+                colors: ['#ffe033', '#ffd700', '#ffb700', '#ffffff']
+            });
+
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.classList.add('opacity-100');
+            modalContent.classList.remove('scale-90');
+            modalContent.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.classList.remove('opacity-100');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-90');
+        }
+
+        // --- 4. CANVAS DE LA GALAXIA EN ESPIRAL ---
+        const canvas = document.getElementById('galaxyCanvas');
         const ctx = canvas.getContext('2d');
 
         function resizeCanvas() {
@@ -217,165 +216,64 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        const items = [];
-        const symbols = ['🌻', '🌼', '🌷', '✨', '⭐', '💛', '🌸'];
+        const stars = [];
+        const numStars = 1200;
 
-        for (let i = 0; i < 45; i++) {
-            items.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 20 + 12,
-                symbol: symbols[Math.floor(Math.random() * symbols.length)],
-                speedY: -(Math.random() * 0.5 + 0.2),
-                speedX: (Math.random() - 0.5) * 0.3,
-                opacity: Math.random() * 0.7 + 0.3,
-                rotation: Math.random() * Math.PI * 2,
-                rotSpeed: (Math.random() - 0.5) * 0.01
+        // Crear partículas para la galaxia en espiral
+        for (let i = 0; i < numStars; i++) {
+            const radius = Math.random() * Math.max(canvas.width, canvas.height) * 0.45;
+            const arms = 3;
+            const armAngle = (i % arms) * ((2 * Math.PI) / arms);
+            const spin = radius * 0.003;
+            const angle = armAngle + spin + (Math.random() - 0.5) * 0.5;
+
+            stars.push({
+                radius: radius,
+                angle: angle,
+                speed: 0.0005 + Math.random() * 0.0005,
+                size: Math.random() * 1.8 + 0.3,
+                color: Math.random() > 0.3 ? '#fbbf24' : (Math.random() > 0.5 ? '#fef08a' : '#ffffff'),
+                alpha: Math.random() * 0.8 + 0.2
             });
         }
 
-        function animateUniverse() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function drawGalaxy() {
+            ctx.fillStyle = '#030200';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            items.forEach(item => {
-                item.y += item.speedY;
-                item.x += item.speedX;
-                item.rotation += item.rotSpeed;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
 
-                if (item.y < -30) {
-                    item.y = canvas.height + 30;
-                    item.x = Math.random() * canvas.width;
-                }
-                if (item.x < -30) item.x = canvas.width + 30;
-                if (item.x > canvas.width + 30) item.x = -30;
+            // Resplandor central dorado
+            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 180);
+            gradient.addColorStop(0, 'rgba(255, 200, 0, 0.35)');
+            gradient.addColorStop(0.5, 'rgba(255, 180, 0, 0.1)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 200, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Dibujar estrellas en espiral
+            stars.forEach(star => {
+                star.angle += star.speed;
+
+                const x = centerX + Math.cos(star.angle) * star.radius;
+                const y = centerY + Math.sin(star.angle) * (star.radius * 0.5); // Elipse 3D
 
                 ctx.save();
-                ctx.translate(item.x, item.y);
-                ctx.rotate(item.rotation);
-                ctx.globalAlpha = item.opacity;
-                ctx.font = `${item.size}px serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(item.symbol, 0, 0);
+                ctx.globalAlpha = star.alpha;
+                ctx.fillStyle = star.color;
+                ctx.beginPath();
+                ctx.arc(x, y, star.size, 0, Math.PI * 2);
+                ctx.fill();
                 ctx.restore();
             });
 
-            requestAnimationFrame(animateUniverse);
-        }
-        animateUniverse();
-
-        // --- 2. Efecto de Confetti / Pétalos ---
-        function rainPetals() {
-            const count = 200;
-            const defaults = { origin: { y: 0.2 } };
-
-            function fire(particleRatio, opts) {
-                confetti(Object.assign({}, defaults, opts, {
-                    particleCount: Math.floor(count * particleRatio)
-                }));
-            }
-
-            fire(0.25, {
-                spread: 26,
-                startVelocity: 55,
-                colors: ['#ffe033', '#ffd700', '#ffb700']
-            });
-            fire(0.2, {
-                spread: 60,
-                colors: ['#ffffff', '#ffeb3b', '#ffa000']
-            });
-            fire(0.35, {
-                spread: 100,
-                decay: 0.91,
-                scalar: 0.8,
-                colors: ['#ffd700', '#f59e0b']
-            });
-            fire(0.1, {
-                spread: 120,
-                startVelocity: 25,
-                decay: 0.92,
-                colors: ['#ffffff', '#fef08a']
-            });
-            fire(0.1, {
-                spread: 120,
-                startVelocity: 45,
-                colors: ['#fbbf24', '#d97706']
-            });
+            requestAnimationFrame(drawGalaxy);
         }
 
-        // --- 3. Modal de Carta ---
-        const modal = document.getElementById('flowerModal');
-        const modalContent = document.getElementById('modalContent');
-
-        function openFlowerModal() {
-            rainPetals();
-            modal.classList.remove('pointer-events-none', 'opacity-0');
-            modal.classList.add('opacity-100');
-            modalContent.classList.remove('scale-95');
-            modalContent.classList.add('scale-100');
-        }
-
-        function closeFlowerModal() {
-            modal.classList.add('opacity-0', 'pointer-events-none');
-            modal.classList.remove('opacity-100');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
-        }
-
-        // --- 4. Música Suave (Sintetizador Web Audio API) ---
-        let audioCtx = null;
-        let isPlaying = false;
-        let timer = null;
-
-        const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]; // C4, D4, E4, G4, A4, C5
-
-        function playNote() {
-            if (!isPlaying || !audioCtx) return;
-            
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            const freq = notes[Math.floor(Math.random() * notes.length)];
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            
-            gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.3);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.5);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
-            osc.start();
-            osc.stop(audioCtx.currentTime + 2.6);
-
-            const nextInterval = Math.random() * 800 + 400;
-            timer = setTimeout(playNote, nextInterval);
-        }
-
-        function toggleMusic() {
-            const btnText = document.getElementById('musicText');
-            const btnIcon = document.getElementById('musicIcon');
-
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-
-            if (isPlaying) {
-                isPlaying = false;
-                clearTimeout(timer);
-                btnText.textContent = 'Música Melódica';
-                btnIcon.textContent = '🎵';
-            } else {
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-                isPlaying = true;
-                playNote();
-                btnText.textContent = 'Pausar Música';
-                btnIcon.textContent = '⏸️';
-            }
-        }
+        drawGalaxy();
     </script>
 </body>
 </html>
